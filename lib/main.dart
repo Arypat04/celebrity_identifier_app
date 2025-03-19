@@ -67,7 +67,15 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+floatingActionButton: Stack(
+  children: [
+    Positioned(
+      left: 50, // Adjust as needed
+      bottom: 100, // Adjust as needed
+      child: SizedBox (
+          width: 100,
+          height: 50,        
+      child: FloatingActionButton(
         onPressed: () {
           if (widget.camera != null) {
             Navigator.push(
@@ -81,6 +89,11 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'CAMERA',
         child: const Icon(Icons.camera),
       ),
+    ),
+    ),
+  ],
+),
+
     );
   }
 }

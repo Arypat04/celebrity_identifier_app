@@ -66,55 +66,84 @@ class TakePictureScreenState extends State<TakePictureScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Take a picture')),
+
+
       // You must wait until the controller is initialized before displaying the
       // camera preview. Use a FutureBuilder to display a loading spinner until the
       // controller has finished initializing.
-      body: FutureBuilder<void>(
-        future: _initializeControllerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            // If the Future is complete, display the preview.
-            return CameraPreview(_controller);
-          } else {
-            // Otherwise, display a loading indicator.
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        // Provide an onPressed callback.
-        onPressed: () async {
-          // Take the Picture in a try / catch block. If anything goes wrong,
-          // catch the error.
-          try {
-            // Ensure that the camera is initialized.
-            await _initializeControllerFuture;
+      
+body: FutureBuilder<void>(
+  future: _initializeControllerFuture,
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.done) {
+      return Stack(
+        children: [
+          Container(color: Colors.white), // Background (optional)
 
-            // Attempt to take a picture and get the file `image`
-            // where it was saved.
+          // Position the camera preview
+          Positioned(
+            left: 30, // Move right (increase value)
+            top: 90, // Move down (increase value)
+            child: SizedBox(
+              width: 350,
+              height: 600,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                  child:CameraPreview(_controller)
+                  ),
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: const Color.fromRGBO(212,175,55, 1), width: 10),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    } else {
+      return const Center(child: CircularProgressIndicator());
+    }
+  },
+),
+
+
+floatingActionButton: Stack(
+  children: [
+    Positioned(
+      right: 40, // Adjust as needed
+      bottom: 50, // Adjust as needed
+      child: SizedBox (
+          width: 300,
+          height: 80,     
+      child: FloatingActionButton(
+        onPressed: () async {
+          try {
+            await _initializeControllerFuture;
             final image = await _controller.takePicture();
 
             if (!context.mounted) return;
 
-            // If the picture was taken, display it on a new screen.
             await Navigator.of(context).push(
               MaterialPageRoute(
-                builder:
-                    (context) => DisplayPictureScreen(
-                      // Pass the automatically generated path to
-                      // the DisplayPictureScreen widget.
-                      imagePath: image.path,
-                    ),
+                builder: (context) => DisplayPictureScreen(imagePath: image.path),
               ),
             );
           } catch (e) {
-            // If an error occurs, log the error to the console.
             print(e);
           }
         },
         child: const Icon(Icons.camera_alt),
       ),
+    ),
+    ),
+  ],
+),
     );
   }
 }
